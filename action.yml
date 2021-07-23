@@ -1,0 +1,45 @@
+name: 'Setup crane'
+description: 'Install and authorize crane'
+branding:
+  icon: box
+  color: green
+inputs:
+  version:
+    description: 'Version of crane to install (tip, latest-release, v0.5.1, etc.)'
+    required: true
+    default: 'latest-release'
+runs:
+  using: "composite"
+  steps:
+  - shell: bash
+    run: |
+      set -ex
+
+      # Install crane:
+      # - if version is "tip", install from tip of main.
+      # - if version is "latest-release", look up latest release.
+      # - otherwise, install the specified version.
+      case ${{ inputs.version }} in
+      tip)
+        echo "Installing crane using go get"
+        go get github.com/google/go-containerregistry/cmd/crane@main
+        ;;
+      latest-release)
+        tag=$(curl -s https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
+        ;;
+      *)
+        tag="${{ inputs.version }}"
+      esac
+
+      os=${{ runner.os }}
+      if [[ $os == "macOS" ]]; then
+        os="Darwin"
+      fi
+
+      if [[ ! -z ${tag} ]]; then
+        echo "Installing crane @ ${tag} for ${os}"
+        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_x86_64.tar.gz | sudo tar xzf - -C /usr/local/bin crane
+      fi
+
+      # NB: username doesn't seem to matter.
+      echo "${{ github.token }}" | crane login ghcr.io --username "dummy" --password-stdin

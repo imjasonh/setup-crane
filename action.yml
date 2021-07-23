@@ -26,8 +26,8 @@ runs:
         ;;
       latest-release)
         jq --version
-        curl -s https://api.github.com/repos/google/go-containerregistry/releases/latest
-        tag=$(curl -s https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
+        curl -s -u "username:${{github.token}}" https://api.github.com/repos/google/go-containerregistry/releases/latest
+        tag=$(curl -s -u "username:${{ github.token }}" https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
         ;;
       *)
         tag="${{ inputs.version }}"

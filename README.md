@@ -25,7 +25,7 @@ jobs:
       - run: |
         crane digest ubuntu
         crane manifest ubuntu | jq
-        crane copy ubuntu ghcr.io/${{ github.owner }}/${{ github.repo }}/ubuntu-copy
+        crane copy ubuntu ghcr.io/${{ github.repository }}/ubuntu-copy
 ```
 
 _That's it!_ This workflow will inspect and copy the `ubuntu` image to your repo's GitHub container registry namespace.

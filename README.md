@@ -51,14 +51,14 @@ To build and install `crane` from source using `go get`, specify `version: tip`.
 By default, `imjasonh/setup-crane` configures `crane` to authorize requests to [GitHub Container Registry](https://ghcr.io), but you can configure it to useuse other registries as well.
 
 To do this, you need to provide credentials to authorize the push.
-You can use [encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) to store the authorization token, and pass it to `crane login` before pushing:
+You can use [encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) to store the authorization token, and pass it to `crane auth login` before pushing:
 
 ```
 - uses: imjasonh/setup-crane@v0.1
 - env:
     auth_token: ${{ secrets.auth_token }}
   run: |
-    echo "${auth_token}" | crane login https://my.registry --username my-username --password-stdin
+    echo "${auth_token}" | crane auth login https://my.registry --username my-username --password-stdin
     crane digest my.registry/my/image
 ```
 

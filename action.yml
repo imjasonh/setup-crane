@@ -42,4 +42,4 @@ runs:
       fi
 
       # NB: username doesn't seem to matter.
-      echo "${{ github.token }}" | crane login ghcr.io --username "dummy" --password-stdin
+      echo "${{ github.token }}" | crane auth login ghcr.io --username "dummy" --password-stdin

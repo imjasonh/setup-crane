@@ -22,7 +22,7 @@ jobs:
       - run: |
           crane digest ubuntu
           crane manifest ubuntu | jq
-          crane copy ubuntu ghcr.io/${{ github.owner }}/${{ github.repo }}/ubuntu-copy
+          crane copy ubuntu ghcr.io/${{ github.repository }}/ubuntu-copy
 
       - name: Install old release
         uses: imjasonh/setup-crane@main

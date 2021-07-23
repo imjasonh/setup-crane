@@ -1,0 +1,38 @@
+name: Use Action
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  use-action:
+    name: Use Action
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - uses: actions/checkout@v2
+
+      - uses: imjasonh/setup-crane@main
+      - run: crane digest ubuntu
+
+      - name: Install old release
+        uses: imjasonh/setup-crane@main
+        with:
+          version: v0.4.0
+      - name: Check installed version
+        run: crane version | grep 0.4.0
+
+      - name: Install from tip
+        uses: imjasonh/setup-crane@main
+        with:
+          version: tip
+      - name: Check installed version (tip)
+        run: |
+          sudo rm /usr/local/bin/crane # Uninstall previous versions.
+          crane version

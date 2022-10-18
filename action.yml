@@ -38,7 +38,7 @@ runs:
 
       if [[ ! -z ${tag} ]]; then
         echo "Installing crane @ ${tag} for ${os}"
-        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_x86_64.tar.gz | sudo tar xzf - -C /usr/local/bin crane
+        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_x86_64.tar.gz | sudo tar xzf - -C /usr/local/bin crane gcrane
       fi
 
       # NB: username doesn't seem to matter.

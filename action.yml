@@ -35,8 +35,11 @@ runs:
       if [[ $os == "macOS" ]]; then
         os="Darwin"
       fi
-
+      
       arch=$(uname -m)
+      if [[ "arch" =~ (aarch64|arm64) ]] ; then
+        arch=arm64
+      fi  
 
       if [[ ! -z ${tag} ]]; then
         echo "Installing crane @ ${tag} for ${os} on ${arch}"

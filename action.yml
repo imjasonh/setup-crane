@@ -36,9 +36,11 @@ runs:
         os="Darwin"
       fi
 
+      arch=$(uname -m)
+
       if [[ ! -z ${tag} ]]; then
-        echo "Installing crane @ ${tag} for ${os}"
-        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_x86_64.tar.gz | sudo tar xzf - -C /usr/local/bin crane
+        echo "Installing crane @ ${tag} for ${os} on ${arch}"
+        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | sudo tar xzf - -C /usr/local/bin crane
       fi
 
       # NB: username doesn't seem to matter.

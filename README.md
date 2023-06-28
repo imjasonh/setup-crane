@@ -62,6 +62,33 @@ You can use [encrypted secrets](https://docs.github.com/en/actions/reference/enc
     crane digest my.registry/my/image
 ```
 
+### Installing different variants
+
+There are 3 different variants of crane available:
+
+- [crane](https://github.com/google/go-containerregistry/tree/main/cmd/crane):
+    - This is the default one
+- [gcrane](https://github.com/google/go-containerregistry/tree/main/cmd/gcrane):
+    - Implements a superset of the crane commands, with additional commands that are specific to gcr.io.
+- [krane](https://github.com/google/go-containerregistry/tree/main/cmd/krane):
+    - A variant of the crane command, but builds in support for authenticating against registries using common
+      credential helpers that find credentials from the environment. Having your environment configured with AWS or GCP
+      credentials would be enough to just run `krane`, and authentication will be handled automatically.
+
+```
+- uses: aws-actions/configure-aws-credentials@v2
+  with:
+    role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
+    aws-region: us-east-2
+- uses: aws-actions/amazon-ecr-login@v1
+
+- uses: imjasonh/setup-crane@v0.1
+  with:  
+    variant: krane
+  run: |
+    krane digest my.registry/my/image
+```
+
 ### A note on versioning
 
 The `@v0.1` in the `uses` statement refers to the version _of the action definition in this repo._

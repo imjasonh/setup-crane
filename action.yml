@@ -8,6 +8,10 @@ inputs:
     description: 'Version of crane to install (tip, latest-release, v0.5.1, etc.)'
     required: true
     default: 'latest-release'
+  variant:
+    required: false
+    default: 'crane'
+    description: 'Name of the crane binary to install. One of [crane, krane, gcrane]'
 runs:
   using: "composite"
   steps:
@@ -15,14 +19,21 @@ runs:
     run: |
       set -ex
 
+      # Variant to install:
+      # - crane: https://github.com/google/go-containerregistry/tree/main/cmd/crane
+      # - gcrane: https://github.com/google/go-containerregistry/tree/main/cmd/gcrane
+      # - krane: https://github.com/google/go-containerregistry/tree/main/cmd/krane
+      variant=${{ inputs.variant }}
+      [[ $variant != "gcrane" && $variant != "krane" ]] && variant="crane"
+
       # Install crane:
       # - if version is "tip", install from tip of main.
       # - if version is "latest-release", look up latest release.
       # - otherwise, install the specified version.
       case ${{ inputs.version }} in
       tip)
-        echo "Installing crane using go get"
-        go install github.com/google/go-containerregistry/cmd/crane@main
+        echo "Installing ${variant} using go get"
+        go install github.com/google/go-containerregistry/cmd/${variant}@main
         ;;
       latest-release)
         tag=$(curl -s -u "username:${{ github.token }}" https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
@@ -42,9 +53,9 @@ runs:
       fi  
 
       if [[ ! -z ${tag} ]]; then
-        echo "Installing crane @ ${tag} for ${os} on ${arch}"
-        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | sudo tar xzf - -C /usr/local/bin crane
+        echo "Installing ${variant} @ ${tag} for ${os} on ${arch}"
+        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | sudo tar xzf - -C /usr/local/bin ${variant}
       fi
 
       # NB: username doesn't seem to matter.
-      echo "${{ github.token }}" | crane auth login ghcr.io --username "dummy" --password-stdin
+      echo "${{ github.token }}" | ${variant} auth login ghcr.io --username "dummy" --password-stdin

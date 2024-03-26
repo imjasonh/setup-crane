@@ -48,7 +48,7 @@ To build and install `crane` from source using `go get`, specify `version: tip`.
 
 ### Pushing to other registries
 
-By default, `imjasonh/setup-crane` configures `crane` to authorize requests to [GitHub Container Registry](https://ghcr.io), but you can configure it to useuse other registries as well.
+By default, `imjasonh/setup-crane` configures `crane` to authorize requests to [GitHub Container Registry](https://ghcr.io), but you can configure it to use other registries as well.
 
 To do this, you need to provide credentials to authorize the push.
 You can use [encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) to store the authorization token, and pass it to `crane auth login` before pushing:

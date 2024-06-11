@@ -35,15 +35,25 @@ runs:
       if [[ $os == "macOS" ]]; then
         os="Darwin"
       fi
-      
+
       arch=$(uname -m)
       if [[ "$arch" =~ (aarch64|arm64) ]] ; then
         arch=arm64
-      fi  
+      fi
+
+      out=crane
+      if [[ "${os}" == "Windows" ]]; then
+        out=crane.exe
+      fi
 
       if [[ ! -z ${tag} ]]; then
         echo "Installing crane @ ${tag} for ${os} on ${arch}"
-        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | sudo tar xzf - -C /usr/local/bin crane
+        tmp=$(mktemp -d)
+        cd ${tmp}
+        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | tar xz ${out}
+        chmod +x ${tmp}/${out}
+        PATH=${PATH}:${tmp}
+        echo "${tmp}" >> $GITHUB_PATH
       fi
 
       # NB: username doesn't seem to matter.

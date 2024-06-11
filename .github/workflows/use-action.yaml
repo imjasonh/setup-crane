@@ -1,6 +1,8 @@
 name: Use Action
 
 on:
+  pull_request:
+    branches: ['main']
   push:
     branches: ['main']
 
@@ -8,34 +10,38 @@ jobs:
   use-action:
     name: Use Action
     strategy:
+      fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-latest]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
+    defaults:
+      run:
+        shell: bash
 
     steps:
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v5
         with:
-          go-version: 1.20.x
-      - uses: actions/checkout@v2
+          go-version: 1.21.x
+      - uses: actions/checkout@v4
 
-      - uses: imjasonh/setup-crane@main
+      - uses: ./
       - run: |
           crane digest ubuntu
           crane manifest ubuntu | jq
           crane copy ubuntu ghcr.io/${{ github.repository }}/ubuntu-copy
 
       - name: Install old release
-        uses: imjasonh/setup-crane@main
+        uses: ./
         with:
           version: v0.12.0
       - name: Check installed version
         run: crane version | grep 0.12.0
 
       - name: Install from tip
-        uses: imjasonh/setup-crane@main
+        uses: ./
         with:
           version: tip
       - name: Check installed version (tip)
         run: |
-          sudo rm /usr/local/bin/crane # Uninstall previous versions.
+          rm $(which crane) # Uninstall previous versions.
           crane version

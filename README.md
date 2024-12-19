@@ -55,10 +55,8 @@ You can use [encrypted secrets](https://docs.github.com/en/actions/reference/enc
 
 ```
 - uses: imjasonh/setup-crane@v0.1
-- env:
-    auth_token: ${{ secrets.auth_token }}
   run: |
-    echo "${auth_token}" | crane auth login https://my.registry --username my-username --password-stdin
+    echo "${{ secrets.auth_token }}" | crane auth login https://my.registry --username my-username --password-stdin
     crane digest my.registry/my/image
 ```
 

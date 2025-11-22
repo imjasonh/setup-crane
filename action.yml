@@ -53,7 +53,7 @@ runs:
         url=https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz
         curl -fsL \
             --remove-on-error --retry 10 --retry-max-time 120 \
-            -o out.tar.gz ${url} | exit 1
+            -o out.tar.gz ${url} || exit 1
         tar xz -f out.tar.gz ${out}
         chmod +x ${tmp}/${out}
         PATH=${PATH}:${tmp}

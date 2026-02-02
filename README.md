@@ -1,4 +1,4 @@
-# GitHub Action to install and setup [`crane`](https://github.com/google/go-containerregistry/cmd/crane/README.md)
+# GitHub Action to install and setup [`crane`](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md)
 
 [![Build](https://github.com/imjasonh/setup-crane/actions/workflows/use-action.yaml/badge.svg)](https://github.com/imjasonh/setup-crane/actions/workflows/use-action.yaml)
 

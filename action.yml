@@ -17,7 +17,7 @@ runs:
 
       # Install crane:
       # - if version is "tip", install from tip of main.
-      # - if version is "latest-release", look up latest release.
+      # - if version is "latest-release", use the latest release URL.
       # - otherwise, install the specified version.
       case ${{ inputs.version }} in
       tip)
@@ -25,10 +25,10 @@ runs:
         go install github.com/google/go-containerregistry/cmd/crane@main
         ;;
       latest-release)
-        tag=$(curl -s -u "username:${{ github.token }}" https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
+        url="https://github.com/google/go-containerregistry/releases/latest/download"
         ;;
       *)
-        tag="${{ inputs.version }}"
+        url="https://github.com/google/go-containerregistry/releases/download/${{ inputs.version }}"
       esac
 
       os=${{ runner.os }}
@@ -46,11 +46,13 @@ runs:
         out=crane.exe
       fi
 
-      if [[ ! -z ${tag} ]]; then
-        echo "Installing crane @ ${tag} for ${os} on ${arch}"
+      if [[ ! -z ${url} ]]; then
+        echo "Installing crane for ${os} on ${arch}"
         tmp=$(mktemp -d)
         cd ${tmp}
-        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | tar xz ${out}
+        fname="go-containerregistry_${os}_${arch}.tar.gz"
+        curl -o "$fname" -fsSL --retry 5 --retry-delay 1 --retry-all-errors "${url}/${fname}"
+        tar xzf "$fname" ${out}
         chmod +x ${tmp}/${out}
         PATH=${PATH}:${tmp}
         echo "${tmp}" >> $GITHUB_PATH

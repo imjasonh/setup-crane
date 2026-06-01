@@ -12,26 +12,30 @@ runs:
   using: "composite"
   steps:
   - shell: bash
+    env:
+      VERSION: ${{ inputs.version }}
+      RUNNER_OS: ${{ runner.os }}
+      GITHUB_TOKEN: ${{ github.token }}
     run: |
       set -ex
 
       # Install crane:
       # - if version is "tip", install from tip of main.
-      # - if version is "latest-release", look up latest release.
+      # - if version is "latest-release", use the latest release URL.
       # - otherwise, install the specified version.
-      case ${{ inputs.version }} in
+      case "${VERSION}" in
       tip)
         echo "Installing crane using go get"
         go install github.com/google/go-containerregistry/cmd/crane@main
         ;;
       latest-release)
-        tag=$(curl -s -u "username:${{ github.token }}" https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r '.tag_name')
+        url="https://github.com/google/go-containerregistry/releases/latest/download"
         ;;
       *)
-        tag="${{ inputs.version }}"
+        url="https://github.com/google/go-containerregistry/releases/download/${VERSION}"
       esac
 
-      os=${{ runner.os }}
+      os="${RUNNER_OS}"
       if [[ $os == "macOS" ]]; then
         os="Darwin"
       fi
@@ -46,15 +50,17 @@ runs:
         out=crane.exe
       fi
 
-      if [[ ! -z ${tag} ]]; then
-        echo "Installing crane @ ${tag} for ${os} on ${arch}"
+      if [[ ! -z ${url} ]]; then
+        echo "Installing crane for ${os} on ${arch}"
         tmp=$(mktemp -d)
         cd ${tmp}
-        curl -fsL https://github.com/google/go-containerregistry/releases/download/${tag}/go-containerregistry_${os}_${arch}.tar.gz | tar xz ${out}
+        fname="go-containerregistry_${os}_${arch}.tar.gz"
+        curl -o "$fname" -fsSL --retry 5 --retry-delay 1 --retry-all-errors "${url}/${fname}"
+        tar xzf "$fname" ${out}
         chmod +x ${tmp}/${out}
         PATH=${PATH}:${tmp}
         echo "${tmp}" >> $GITHUB_PATH
       fi
 
       # NB: username doesn't seem to matter.
-      echo "${{ github.token }}" | crane auth login ghcr.io --username "dummy" --password-stdin
+      echo "${GITHUB_TOKEN}" | crane auth login ghcr.io --username "dummy" --password-stdin

@@ -36,7 +36,7 @@ runs:
       esac
 
       os="${RUNNER_OS}"
-      if [[ $os == "macOS" ]]; then
+      if [[ "$os" == "macOS" ]]; then
         os="Darwin"
       fi
 
@@ -50,14 +50,14 @@ runs:
         out=crane.exe
       fi
 
-      if [[ ! -z ${url} ]]; then
+      if [[ ! -z "${url}" ]]; then
         echo "Installing crane for ${os} on ${arch}"
         tmp=$(mktemp -d)
         cd ${tmp}
         fname="go-containerregistry_${os}_${arch}.tar.gz"
         curl -o "$fname" -fsSL --retry 5 --retry-delay 1 --retry-all-errors "${url}/${fname}"
-        tar xzf "$fname" ${out}
-        chmod +x ${tmp}/${out}
+        tar xzf "$fname" "${out}"
+        chmod +x "${tmp}/${out}"
         PATH=${PATH}:${tmp}
         echo "${tmp}" >> $GITHUB_PATH
       fi
